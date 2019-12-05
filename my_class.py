@@ -1,24 +1,42 @@
+def is_student_id_exist(s_id):
+    with open('student_db.txt', 'r') as f:
+        info = f.read()
+        for i in info.split('\n'):
+            if i:
+                old_s_id = i.split(',')[0]
+                if s_id == old_s_id:
+                    return True
+    return False
 
 
 def add_student():
-    s_id = input('Enter student ID: ')
-    name = input('Enter student name: ')
+    s_id = input('Enter student ID*: ')
+    if s_id and is_student_id_exist(s_id):
+        print('Student ID {} already taken!'.format(s_id))
+        add_student()
+        return False
+    name = input('Enter student name*: ')
     email = input('Enter student email: ')
-    phone = input('Enter student phone: ')
-    with open('student_db.txt', 'a') as f:
-        f.write(s_id + ',' + name + ',' + email + ',' + phone + '\n')
+    phone = input('Enter student phone*: ')
+    if s_id and name and phone:
+        with open('student_db.txt', 'a') as f:
+            f.write(s_id + ',' + name + ',' + email + ',' + phone + '\n')
+        print('New student added successfully!')
+    else:
+        print('Student ID or Name or Phone Should not be blank!')
 
 
 def edit_student():
     given_s_id = input('Enter the student id which you want to edit: ')
     with open('student_db.txt', 'r') as f:
         info = f.read()
+        is_exist = False
         with open('student_db.txt', 'w') as fw:
             for i in info.split('\n'):
-                # print(i)
                 if i:
                     s_id, name, email, phone = i.split(',')
-                    if int(given_s_id) == int(s_id):
+                    if given_s_id == s_id:
+                        is_exist = True
                         print('1 - Name')
                         print('2 - Email')
                         print('3 - Phone')
@@ -31,6 +49,8 @@ def edit_student():
                             phone = input('Enter a new student phone: ')
                         print(given_s_id, 'is edited!')
                     fw.write(s_id + ',' + name + ',' + email + ',' + phone + '\n')
+        if not is_exist:
+            print('Student ID {} not exist!'.format(given_s_id))
 
 
 def view_student():
@@ -57,7 +77,7 @@ def delete_student():
                 # print(i)
                 if i:
                     s_id, name, email, phone = i.split(',')
-                    if int(given_s_id) == int(s_id):
+                    if given_s_id == s_id:
                         print(given_s_id, 'is deleted!')
                         continue
                     else:
